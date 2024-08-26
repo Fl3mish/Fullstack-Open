@@ -1,8 +1,8 @@
-# React + Vite
+# Why I took this approach.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- I imagined that if I were to retrieve this data from the backend then the votes and anecdotes would be paired together as an object.
+- Therefore I have made an array of objects so that it's clear how many votes there are for each anecdote
 
-Currently, two official plugins are available:
+## Afterthought
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+I believe that if I did a simple array with the votes as suggested in the instructions instead of grouping it all as an object, I would have had a much easier time coding this project but I've learned a lot.
