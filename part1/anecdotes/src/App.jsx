@@ -45,10 +45,12 @@ const App = () => {
     },
   ]);
 
+  // Retrieve random anecdote based on how many there are in the array.
   const handleNextAnecdote = () => {
     setSelected(Math.floor(Math.random() * anecdotes.length));
   };
 
+  // Increase vote on click.
   const handleVote = () => {
     const updatedVote = anecdotes.map((anecdote, index) =>
       index === selected ? { ...anecdote, votes: anecdote.votes + 1 } : anecdote
@@ -56,6 +58,7 @@ const App = () => {
     setAnecdotes(updatedVote);
   };
 
+  // Retrieve object with most votes
   const mostVotes = anecdotes.reduce((acc, curr, index) => {
     if (curr.votes > acc.votes) {
       return { ...curr, index };
