@@ -1,8 +1,9 @@
-const ListItem = ({ name, number, onDelete }) => {
+const ListItem = ({ data, onDelete }) => {
+  const { name, number, id } = data;
   return (
     <div>
       {name} {number}
-      <button onClick={onDelete}>Delete</button>
+      <button onClick={() => onDelete(id, name)}>Delete</button>
     </div>
   );
 };

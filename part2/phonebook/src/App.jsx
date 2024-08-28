@@ -27,41 +27,39 @@ const App = () => {
     e.preventDefault();
     // Create new object based on input value
     const newPerson = {
-      name: newName,
+      name: normalizeString(newName),
       number: newNumber,
     };
-    // extract values, normalize the string and compare values.
-    const existingName = persons.map((person) => normalizeString(person.name));
-    const isDuplicate = existingName.includes(normalizeString(newPerson.name));
+    // Verify if name doesn't already exists in db.
+    const isExistingPerson = persons.find(
+      (person) => person.name === newPerson.name
+    );
+    console.log(isExistingPerson);
 
-    // Check if name exists
-    if (isDuplicate) {
+    // Confirm number update is person is already in db.
+    if (isExistingPerson) {
       const confirmUpdate = window.confirm(
         `${newPerson.name} is already added to phonebook, replace the old number with a new one?`
       );
-      // Check if they want to update existing number
+      // Create updated person
       if (confirmUpdate) {
-        const getExistingPerson = persons.find(
-          (p) => p.name === normalizeString(newPerson.name)
-        );
-        // Create updated person variable
         const changedPerson = {
-          ...getExistingPerson,
+          ...isExistingPerson,
           number: newPerson.number,
         };
-        // Update existing person in DB with updated data
+        // Update/Push updated person into the DB.
         personServices
-          .update(getExistingPerson.id, changedPerson)
-          .then((returnedPerson) => {
+          .update(isExistingPerson.id, changedPerson)
+          .then((updatedPerson) => {
             setPersons(
               persons.map((person) =>
-                person.id !== getExistingPerson.id ? person : returnedPerson
+                person.id !== isExistingPerson.id ? person : updatedPerson
               )
             );
           });
       }
     } else {
-      // Create new person
+      // Create/Add new person to db.
       personServices.create(newPerson).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
       });
@@ -79,7 +77,9 @@ const App = () => {
 
   // Delete Data
   const deleteOnePerson = (id, name) => {
-    if (window.confirm(`delete ${name}?`))
+    const confirmDeletePerson = window.confirm(`delete ${name}?`);
+    // Ask user if they are sure that they wish to delete person entry.
+    if (confirmDeletePerson)
       personServices.deletePerson(id).then((response) => {
         if (response.status === 200)
           setPersons(persons.filter((person) => person.id !== id));
@@ -100,14 +100,7 @@ const App = () => {
         setNewNumber={setNewNumber}
       />
       <h2>Numbers</h2>
-      {searchPerson.map((person) => (
-        <List
-          key={person.name}
-          name={person.name}
-          number={person.number}
-          onDelete={() => deleteOnePerson(person.id, person.name)}
-        />
-      ))}
+      <List onDelete={deleteOnePerson} searchPerson={searchPerson} />
     </div>
   );
 };

@@ -1,9 +1,11 @@
 import ListItem from "./ListItem";
 
-const List = ({ name, number, onDelete }) => {
+const List = ({ onDelete, searchPerson }) => {
   return (
     <div>
-      <ListItem name={name} number={number} onDelete={onDelete} />
+      {searchPerson.map((person) => (
+        <ListItem key={person.id} data={person} onDelete={onDelete} />
+      ))}
     </div>
   );
 };
