@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Form from "./components/Form";
 import List from "./components/List";
 import SearchFilter from "./components/SearchFilter";
-import axios from "axios";
+import personServices from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,9 +10,10 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Get Data
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    personServices.getAll().then((initialNumbers) => {
+      setPersons(initialNumbers);
     });
   }, []);
 
@@ -20,29 +21,71 @@ const App = () => {
   const normalizeString = (string) => {
     return string.toLowerCase().trim();
   };
+
+  // Create Data
   const addPerson = (e) => {
     e.preventDefault();
     // Create new object based on input value
     const newPerson = {
-      id: String(persons.length + 1),
       name: newName,
       number: newNumber,
     };
     // extract values, normalize the string and compare values.
     const existingName = persons.map((person) => normalizeString(person.name));
     const isDuplicate = existingName.includes(normalizeString(newPerson.name));
-    // If name exists/duplicate -> return warning otherwise add name.
-    isDuplicate
-      ? alert(`${newPerson.name} is already added to phonebook`)
-      : setPersons(persons.concat(newPerson));
+
+    // Check if name exists
+    if (isDuplicate) {
+      const confirmUpdate = window.confirm(
+        `${newPerson.name} is already added to phonebook, replace the old number with a new one?`
+      );
+      // Check if they want to update existing number
+      if (confirmUpdate) {
+        const getExistingPerson = persons.find(
+          (p) => p.name === normalizeString(newPerson.name)
+        );
+        // Create updated person variable
+        const changedPerson = {
+          ...getExistingPerson,
+          number: newPerson.number,
+        };
+        // Update existing person in DB with updated data
+        personServices
+          .update(getExistingPerson.id, changedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== getExistingPerson.id ? person : returnedPerson
+              )
+            );
+          });
+      }
+    } else {
+      // Create new person
+      personServices.create(newPerson).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+      });
+    }
+
     // Reset input
     setNewName("");
     setNewNumber("");
   };
 
+  // Filter Data
   const searchPerson = persons.filter((person) =>
     normalizeString(person.name).includes(normalizeString(searchTerm))
   );
+
+  // Delete Data
+  const deleteOnePerson = (id, name) => {
+    if (window.confirm(`delete ${name}?`))
+      personServices.deletePerson(id).then((response) => {
+        if (response.status === 200)
+          setPersons(persons.filter((person) => person.id !== id));
+        console.log(`Person deletion succesfull`);
+      });
+  };
 
   return (
     <div>
@@ -58,7 +101,12 @@ const App = () => {
       />
       <h2>Numbers</h2>
       {searchPerson.map((person) => (
-        <List key={person.name} name={person.name} number={person.number} />
+        <List
+          key={person.name}
+          name={person.name}
+          number={person.number}
+          onDelete={() => deleteOnePerson(person.id, person.name)}
+        />
       ))}
     </div>
   );
