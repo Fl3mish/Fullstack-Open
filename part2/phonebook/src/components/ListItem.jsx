@@ -2,7 +2,7 @@ const ListItem = ({ data, onDelete }) => {
   const { name, number, id } = data;
   return (
     <div>
-      {name} {number}
+      {name} {number} {""}
       <button onClick={() => onDelete(id, name)}>Delete</button>
     </div>
   );
