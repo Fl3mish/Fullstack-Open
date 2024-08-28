@@ -3,12 +3,17 @@ import Form from "./components/Form";
 import List from "./components/List";
 import SearchFilter from "./components/SearchFilter";
 import personServices from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [notification, setNotification] = useState({
+    message: null,
+    status: "ok",
+  });
 
   // Get Data
   useEffect(() => {
@@ -16,6 +21,19 @@ const App = () => {
       setPersons(initialNumbers);
     });
   }, []);
+
+  const showNotification = (message, status) => {
+    setNotification({
+      message: message,
+      status: status,
+    });
+    setTimeout(() => {
+      setNotification({
+        message: null,
+        status: null,
+      });
+    }, 5000);
+  };
 
   // Utility to make strings the same for comparisons
   const normalizeString = (string) => {
@@ -56,12 +74,22 @@ const App = () => {
                 person.id !== isExistingPerson.id ? person : updatedPerson
               )
             );
+            showNotification(`Updated number to${updatedPerson.number}`, "ok");
+          })
+          .catch((error) => {
+            if (error.status === 404)
+              showNotification(
+                `Information of ${newPerson.name} has already been removed from server`,
+                "error"
+              );
+            console.error(error.message);
           });
       }
     } else {
       // Create/Add new person to db.
       personServices.create(newPerson).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
+        showNotification(`Added ${returnedPerson.name}`, "ok");
       });
     }
 
@@ -80,16 +108,26 @@ const App = () => {
     const confirmDeletePerson = window.confirm(`delete ${name}?`);
     // Ask user if they are sure that they wish to delete person entry.
     if (confirmDeletePerson)
-      personServices.deletePerson(id).then((response) => {
-        if (response.status === 200)
-          setPersons(persons.filter((person) => person.id !== id));
-        console.log(`Person deletion succesfull`);
-      });
+      personServices
+        .deletePerson(id)
+        .then((response) => {
+          if (response.status === 200)
+            setPersons(persons.filter((person) => person.id !== id));
+          showNotification(`Succesfully deleted ${name}`, "ok");
+          console.log(`Person deletion succesfull`);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification
+        message={notification.message}
+        status={notification.status}
+      />
       <SearchFilter searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Form
         onSubmit={addPerson}
