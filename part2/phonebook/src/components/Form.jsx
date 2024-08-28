@@ -1,6 +1,6 @@
 const Form = ({ name, number, onSubmit, setNewName, setNewNumber }) => {
   return (
-    <>
+    <div>
       <h2>Add a new</h2>
       <form onSubmit={onSubmit}>
         <div>
@@ -30,7 +30,7 @@ const Form = ({ name, number, onSubmit, setNewName, setNewNumber }) => {
           <button type="submit">Add</button>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 export default Form;
