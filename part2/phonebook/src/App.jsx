@@ -91,7 +91,6 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <SearchFilter searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <h2>Add a new</h2>
       <Form
         onSubmit={addPerson}
         name={newName}
@@ -99,7 +98,6 @@ const App = () => {
         setNewName={setNewName}
         setNewNumber={setNewNumber}
       />
-      <h2>Numbers</h2>
       <List onDelete={deleteOnePerson} searchPerson={searchPerson} />
     </div>
   );
