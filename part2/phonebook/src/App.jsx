@@ -12,7 +12,7 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [notification, setNotification] = useState({
     message: null,
-    status: "ok",
+    status: null,
   });
 
   // Get Data
