@@ -7,26 +7,33 @@ import Notification from "./components/Notifications";
 const App = () => {
   const [searchquery, setSearchQuery] = useState("");
   const [country, setCountry] = useState([]);
+  const [filteredCountries, setFilteredCountries] = useState([]);
   const [showNotification, setNotification] = useState({
     message: null,
     status: null,
   });
 
+  // Fetch all countries data
   useEffect(() => {
     console.log("fetching country data...");
     countryServices.getAll().then((response) => setCountry(response));
   }, []);
 
-  const handleChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const filteredCountries = country.filter((c) => {
-    return c.name.common.toLowerCase().includes(searchquery.toLowerCase());
-  });
-
+  // Filter that data based on the search query
   useEffect(() => {
-    if (filteredCountries.length > 10) {
+    const filtered = country.filter((c) =>
+      c.name.common.toLowerCase().includes(searchquery.toLowerCase())
+    );
+    setFilteredCountries(filtered);
+  }, [country, searchquery]);
+
+  // Provide a notification when criteria is met
+  useEffect(() => {
+    if (
+      filteredCountries.length !== country.length &&
+      filteredCountries.length > 10
+    ) {
+      console.log(filteredCountries.length);
       setNotification({
         message: "Too many matches, specify another filter.",
         status: "error",
@@ -37,7 +44,11 @@ const App = () => {
         status: null,
       });
     }
-  }, [filteredCountries.length]);
+  }, [filteredCountries.length, country.length]);
+
+  const handleChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
 
   return (
     <div>
