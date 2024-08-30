@@ -3,6 +3,7 @@ import countryServices from "./services";
 import List from "./components/List";
 import SearchFilter from "./components/SearchFilter";
 import Notification from "./components/Notifications";
+import "dotenv/config";
 
 const App = () => {
   const [searchquery, setSearchQuery] = useState("");

@@ -33,7 +33,6 @@ const ListItem = ({ country, showDetails }) => {
           <li>
             <img className="flag" src={flags.svg} alt={flags.alt} />
           </li>
-          <button onClick={() => setShowMore(false)}>Hide</button>
         </>
       )}
     </>
