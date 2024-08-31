@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
-// Middleware
-app.use(express.json());
+const morgan = require("morgan");
 let data = [
   {
     id: "1",
@@ -25,6 +24,17 @@ let data = [
   },
 ];
 
+morgan.token("body", function getBody(req) {
+  if (req.method === "POST") return JSON.stringify(req.body);
+});
+
+// Middleware
+app.use(express.json());
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
+// app.use(morgan(":body :method :url: :response-time"));
+
 // Routes
 // Get Info
 app.get("/api/persons/info", (req, res) => {
@@ -41,9 +51,7 @@ app.get("/api/persons", (req, res) => {
 // GET Single Person
 app.get("/api/persons/:id", (req, res) => {
   const { id } = req.params;
-  console.log(req.params);
   const person = data.find((p) => p.id === id);
-  console.log("content: ");
   if (!person) {
     return res.status(400).json({
       error: "content missing",
@@ -55,7 +63,6 @@ app.get("/api/persons/:id", (req, res) => {
 // CREATE/POST Person
 app.post("/api/persons", (req, res) => {
   //   const body = req.body;
-  console.log(req.body);
   const { name, number } = req.body;
   const isExistingPerson = data.find(
     (p) => p.name.toLowerCase() === name.toLowerCase()

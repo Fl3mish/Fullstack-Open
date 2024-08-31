@@ -3,7 +3,7 @@ GET http://localhost:3001/api/persons
 Content-Type: application/json
 
 ### GET SINGLE
-GET http://localhost:3001/api/persons/3918405
+GET http://localhost:3001/api/persons/1
 Content-Type: application/json
 
 ### POST/CREATE Person
@@ -11,8 +11,8 @@ POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-    "name": "John Doe",
-    "number": "12345678"
+    "name": "John Lennon",
+    "number": "1234"
 }
 
 ### DELETE Person Entry
